@@ -1,19 +1,19 @@
 <template>
   <Toast position="bottom-right" group="br" />
   <FloatLabel variant="on" class="form-input">
-    <Select v-model="settings.theme" :options="themes" optionLabel="name" fluid @change="saveSettings" />
+    <Select v-model="settings.Theme" :options="themes" optionLabel="name" fluid @change="saveSettings" />
     <label for="apiKey">Selectează Tema</label>
   </FloatLabel>
 
   <FloatLabel variant="on" class="form-input">
-    <InputText v-model="settings.apiKey" id="apiKey" type="text" fluid @change="saveSettings" />
+    <InputText v-model="settings.ApiKey" id="apiKey" type="text" fluid @change="saveSettings" />
     <label for="apiKey">API Key</label>
   </FloatLabel>
 </template>
 
 <script setup>
-import { useSettingsStore } from "../stores/settings.js"
-import { storeToRefs } from 'pinia'
+import { useSettingsStore } from "../stores/settings.js";
+import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
 
 const settingsStore = useSettingsStore();
@@ -30,7 +30,7 @@ const saveSettings = async () => {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .form-input {
   margin-bottom: 1rem;
 }

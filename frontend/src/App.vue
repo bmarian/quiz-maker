@@ -26,7 +26,9 @@ const route = useRoute();
 
 const routes = [
   { route: '/', label: 'Adaugă o întrebare', icon: 'pi pi-clipboard' },
-  { route: '/list', label: 'Lista întrebărilor', icon: 'pi pi-list' },
+  { route: '/category', label: 'Manager de categorii', icon: 'pi pi-book' },
+  { route: '/label', label: 'Manager de etichete', icon: 'pi pi-tag' },
+  { route: '/list', label: 'Lista întrebărilor', icon: 'pi pi-bars' },
   { route: '/settings', label: 'Setări', icon: 'pi pi-cog' },
 ];
 const header = computed(() => {
@@ -65,11 +67,19 @@ document.addEventListener('contextmenu', (evt) => {
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .main-panel {
   margin-top: 0.5rem;
-  height: calc(100vh - (52px + 1.5rem));
+  height: calc(100vh - (52px + 1.6rem));
 
   overflow: auto;
+
+  & .p-panel-content-container {
+    height: calc(100% - 52px);
+  }
+
+  & .p-panel-content {
+    height: 100%;
+  }
 }
 </style>

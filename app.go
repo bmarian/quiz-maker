@@ -19,10 +19,10 @@ func (a *App) LoadSettings() any {
 	var settings Settings;
 
 	bytes, err := os.ReadFile(settingsFileLocation);
-	if err != nil { panic(err); }
+	if err != nil { return nil; }
 
 	err = json.Unmarshal(bytes, &settings);
-	if err != nil { panic(err); }
+	if err != nil { return nil; }
 
 	return settings;
 }
