@@ -1,0 +1,13 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "quiz-maker",
+  "outputfilename": "quiz-maker",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Marian",
+    "email": "56575926+marian-sage@users.noreply.github.com"
+  }
+}
