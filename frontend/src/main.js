@@ -5,6 +5,8 @@ import { createPinia } from 'pinia';
 
 import PrimeVue from "primevue/config";
 import Aura from '@primevue/themes/aura';
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
 import { definePreset } from "@primevue/themes";
 
 import './style.css';
@@ -672,6 +674,7 @@ const CustomTheme = definePreset(Aura, {
     }
   }
 });
-app.use(PrimeVue, { ripple: true, theme: { preset: CustomTheme, options: { darkModeSelector: 'system' } } });
+app.use(PrimeVue, { ripple: true, theme: { preset: CustomTheme, options: { darkModeSelector: '.dark-theme' } } });
+app.use(ToastService);
 
 app.mount('#app');

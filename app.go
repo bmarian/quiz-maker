@@ -2,21 +2,35 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
+	"os"
 )
 
 func NewApp() *App {
 	return &App{}
 }
 
-// startup is called when the app starts. The context is saved
-// so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	fmt.Println("Ana are mere")
-	return fmt.Sprintf("Hello %s, It's show time!", name)
+func (a *App) LoadSettings() any {
+	var settingsFileLocation = "./settings.json";
+	var settings Settings;
+
+	bytes, err := os.ReadFile(settingsFileLocation);
+	if err != nil { panic(err); }
+
+	err = json.Unmarshal(bytes, &settings);
+	if err != nil { panic(err); }
+
+	return settings;
+}
+
+func (a *App) SaveSettings(settings string) bool {
+	var settingsFileLocation = "./settings.json";
+	bytes := []byte(settings)
+
+	err := os.WriteFile(settingsFileLocation, bytes, 0777);
+	return err == nil;
 }

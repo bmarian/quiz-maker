@@ -9,18 +9,57 @@
       </RouterLink>
     </template>
   </Menubar>
-  <Panel class="main-panel">
+  <Panel class="main-panel" :header="header">
     <RouterView />
   </Panel>
 </template>
 
 <script setup>
-const routes = [
-  { route: '/', label: 'Adauga o intrebare', icon: 'pi pi-clipboard' },
-  { route: '/list', label: 'Lista intrebarilor', icon: 'pi pi-list' },
-  { route: '/settings', label: 'Setari', icon: 'pi pi-cog' },
-];
+import { reactive, computed, watch } from 'vue';
+import { storeToRefs } from 'pinia'
+import { useRoute } from 'vue-router';
+import { useSettingsStore } from "./stores/settings.js"
 
+const settingsStore = useSettingsStore();
+const { settings, theme } = storeToRefs(settingsStore);
+const route = useRoute();
+
+const routes = [
+  { route: '/', label: 'Adaugă o întrebare', icon: 'pi pi-clipboard' },
+  { route: '/list', label: 'Lista întrebărilor', icon: 'pi pi-list' },
+  { route: '/settings', label: 'Setări', icon: 'pi pi-cog' },
+];
+const header = computed(() => {
+  const { path } = route;
+  const label = routes.find((r) => r.route === path)?.label || '';
+
+  return label;
+});
+
+settingsStore.loadSettings();
+
+watch(theme, (newValue) => {
+  const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  if ((newValue === 'system' && systemDarkMode) || newValue === 'dark') {
+    document.documentElement.classList.add('dark-theme');
+  } else {
+    document.documentElement.classList.remove('dark-theme');
+  }
+});
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+  const themeValue = theme.value;
+  const systemDarkMode = event.matches;
+
+  if (themeValue !== 'system') return;
+
+  if (systemDarkMode) {
+    document.documentElement.classList.add('dark-theme');
+  } else {
+    document.documentElement.classList.remove('dark-theme');
+  }
+});
 document.addEventListener('contextmenu', (evt) => {
   evt.preventDefault();
 });
