@@ -6,23 +6,58 @@
     <Button label="Adaugă o categorie" class="no-category-button" variant="outlined" icon="pi pi-plus"
       @click="addNewCategory" />
   </div>
+  <TreeTable v-else class="categories-table" :value="formattedCategories">
+    <Column field="name" header="Nume" expander expended></Column>
+    <Column field="color" header="Culoare">
+      <template #body="{ node }">
+        <ColorPicker class="categories-table-color-picker" :modelValue="node.data.color" disabled fluid />
+      </template>
+    </Column>
+    <Column style="width: 10rem">
+      <template #body="{ node }">
+        <Button v-if="Array.isArray(node.children)" type="button" icon="pi pi-pencil" variant="outlined"
+          severity="success" @click="editCategory(node)" />
+        <Button v-if="Array.isArray(node.children)" type="button" icon="pi pi-plus" variant="outlined"
+          @click="addSubCategory(node)" />
+
+        <Button v-if="!Array.isArray(node.children)" type="button" icon="pi pi-pencil" variant="outlined"
+          severity="success" @click="editSubCategory(node)" />
+      </template>
+    </Column>
+    <template #footer>
+      <Button label="Adaugă o categorie nouă" variant="outlined" size="small" icon="pi pi-plus"
+        @click="addNewCategory" />
+    </template>
+  </TreeTable>
 </template>
 
 <script setup>
+import { defineAsyncComponent, computed } from 'vue';
 import DynamicDialog from 'primevue/dynamicdialog';
 import { useCategoriesStore } from "../stores/categories.js";
 import { storeToRefs } from 'pinia';
 import { useDialog } from 'primevue/usedialog';
-import { defineAsyncComponent } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { randomHexColorGenerator } from '../utils.js';
 
 const toast = useToast();
 const categoriesStore = useCategoriesStore();
-const { selectedCategory, categories } = storeToRefs(categoriesStore);
+const { selectedCategory, selectedSubCategory, categories } = storeToRefs(categoriesStore);
+const formattedCategories = computed(() => {
+  if (!Array.isArray(categories.value) || !categories.value.length) return [];
+  return categories.value.map((c) => {
+    const { key, children = [], ...data } = c;
+    const formattedChildren = children.map((child) => {
+      const { key: childKey, ...childData } = child;
+      return { key: childKey, parentKey: key, data: childData };
+    });
+    return { key, data, children: formattedChildren };
+  });
+});
 
 const dialog = useDialog();
 const CategoryDialog = defineAsyncComponent(() => import('../components/CategoryDialog.vue'));
+const SubCategoryDialog = defineAsyncComponent(() => import('../components/SubCategoryDialog.vue'));
 const addNewCategory = () => {
   selectedCategory.value = { color: randomHexColorGenerator() };
   dialog.open(CategoryDialog, {
@@ -40,7 +75,7 @@ const addNewCategory = () => {
     onClose() {
       const status = categoriesStore.addCategory(selectedCategory.value);
       if (status) {
-        toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.name} a fost adăugată cu succes!`, group: 'br', life: 1000 });
+        toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.name} a fost adăugată cu succes!`, group: 'br', life: 3000 });
       } else {
         toast.add({ severity: 'error', summary: 'Eroare', detail: `Categoria ${selectedCategory.value.name}, nu a putut fi adăugată! `, group: 'br', life: 3000 });
       }
@@ -49,10 +84,132 @@ const addNewCategory = () => {
     }
   });
 };
+const editCategory = (category) => {
+  const { key, data } = category;
+  selectedCategory.value = { ...data, key };
+
+  dialog.open(CategoryDialog, {
+    props: {
+      header: `Editează categoria: ${data.name}`,
+      style: {
+        width: '50vw',
+      },
+      breakpoints: {
+        '960px': '75vw',
+        '640px': '90vw'
+      },
+      modal: true
+    },
+    onClose() {
+      if (selectedCategory.value.shouldDelete) {
+        const status = categoriesStore.deleteCategory(key);
+        if (status) {
+          toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.name} a fost ștearsă cu succes!`, group: 'br', life: 3000 });
+        } else {
+          toast.add({ severity: 'error', summary: 'Eroare', detail: `Categoria ${selectedCategory.value.name}, nu a putut fi ștearsă! `, group: 'br', life: 3000 });
+        }
+        return;
+      }
+
+      const status = categoriesStore.editCategory(key, selectedCategory.value);
+      if (status) {
+        toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.name} a fost editată cu succes!`, group: 'br', life: 3000 });
+      } else {
+        toast.add({ severity: 'error', summary: 'Eroare', detail: `Categoria ${selectedCategory.value.name}, nu a putut fi editată! `, group: 'br', life: 3000 });
+      }
+
+      selectedCategory.value = {};
+    }
+  });
+};
+const addSubCategory = (category) => {
+  const { key: parentKey, data: parentData } = category;
+  selectedSubCategory.value = { color: parentData.color };
+
+  dialog.open(SubCategoryDialog, {
+    props: {
+      header: `Adaugă o subcategorie pentru ${parentData.name}`,
+      style: {
+        width: '50vw',
+      },
+      breakpoints: {
+        '960px': '75vw',
+        '640px': '90vw'
+      },
+      modal: true
+    },
+    onClose() {
+      const status = categoriesStore.addSubCategory(parentKey, selectedSubCategory.value);
+      if (status) {
+        toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.name} a fost adaugată cu succes!`, group: 'br', life: 3000 });
+      } else {
+        toast.add({ severity: 'error', summary: 'Eroare', detail: `Subcategoria ${selectedSubCategory.value.name}, nu a putut fi adaugată! `, group: 'br', life: 3000 });
+      }
+
+      selectedSubCategory.value = {};
+    }
+  });
+};
+const editSubCategory = (subCategory) => {
+  const { key, parentKey, data } = subCategory;
+  selectedSubCategory.value = { ...data, key };
+
+  dialog.open(SubCategoryDialog, {
+    props: {
+      header: `Editeaza subcategoria: ${data.name}`,
+      style: {
+        width: '50vw',
+      },
+      breakpoints: {
+        '960px': '75vw',
+        '640px': '90vw'
+      },
+      modal: true
+    },
+    onClose() {
+      if (selectedSubCategory.value.shouldDelete) {
+        const status = categoriesStore.deleteSubCategory(parentKey, key);
+        if (status) {
+          toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.name} a fost ștearsă cu succes!`, group: 'br', life: 3000 });
+        } else {
+          toast.add({ severity: 'error', summary: 'Eroare', detail: `Subcategoria ${selectedSubCategory.value.name}, nu a putut fi ștearsă! `, group: 'br', life: 3000 });
+        }
+        return;
+      }
+
+      const status = categoriesStore.editSubCategory(parentKey, key, selectedSubCategory.value);
+      if (status) {
+        toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.name} a fost editată cu succes!`, group: 'br', life: 3000 });
+      } else {
+        toast.add({ severity: 'error', summary: 'Eroare', detail: `Subcategoria ${selectedSubCategory.value.name}, nu a putut fi editată! `, group: 'br', life: 3000 });
+      }
+
+      selectedSubCategory.value = {};
+    }
+  });
+};
 </script>
 
 <style lang="scss">
 .no-category-button {
   margin-top: 1rem;
+}
+
+.categories-table {
+  height: 100%;
+
+  & .p-treetable-table-container {
+    height: calc(100% - 56px);
+  }
+
+  & .p-treetable-footer {
+    border-bottom: 0;
+  }
+}
+
+.categories-table-color-picker {
+  & .p-disabled {
+    opacity: 100%;
+  }
 }
 </style>

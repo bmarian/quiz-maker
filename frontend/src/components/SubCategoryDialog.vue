@@ -1,17 +1,17 @@
 <template>
   <FloatLabel variant="on" class="form-input">
-    <InputText v-model="selectedCategory.name" id="categoryName" type="text" fluid />
-    <label for="categoryName">Numele categoriei</label>
+    <InputText v-model="selectedSubCategory.name" id="categoryName" type="text" fluid />
+    <label for="categoryName">Numele subcategoriei</label>
   </FloatLabel>
   <div class="form-input color-picker">
-    <label for="categoryColor">Alege culoarea categoriei: </label>
-    <ColorPicker v-model="selectedCategory.color" id="categoryColor" fluid />
+    <label for="categoryColor">Culoarea subcategoriei: </label>
+    <ColorPicker :modelValue="selectedSubCategory.color" id="categoryColor" disabled fluid />
   </div>
   <div class="category-dialog-footer">
     <Button label="Salvează" class="no-category-button" variant="outlined" icon="pi pi-check"
       @click="closeDialog(false)" />
-    <Button v-if="selectedCategory.key" label="Șterge" class="no-category-button" variant="outlined" icon="pi pi-trash"
-      severity="danger" @click="closeDialog(true)" />
+    <Button v-if="selectedSubCategory.key" label="Șterge" class="no-category-button" variant="outlined"
+      icon="pi pi-trash" severity="danger" @click="closeDialog(true)" />
   </div>
 </template>
 
@@ -21,11 +21,11 @@ import { storeToRefs } from 'pinia';
 import { inject } from "vue";
 
 const categoriesStore = useCategoriesStore();
-const { selectedCategory } = storeToRefs(categoriesStore);
+const { selectedSubCategory } = storeToRefs(categoriesStore);
 
 const dialogRef = inject('dialogRef');
 const closeDialog = (shouldDelete) => {
-  selectedCategory.value.shouldDelete = shouldDelete;
+  selectedSubCategory.value.shouldDelete = shouldDelete;
   dialogRef.value.close();
 }
 </script>
@@ -42,6 +42,10 @@ const closeDialog = (shouldDelete) => {
 .color-picker {
   margin-left: 0.3rem;
   margin-bottom: 0.3rem;
+
+  & .p-disabled {
+    opacity: 100%;
+  }
 }
 
 .category-dialog-footer {

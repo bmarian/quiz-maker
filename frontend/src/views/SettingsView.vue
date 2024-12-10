@@ -23,7 +23,7 @@ const { settings, themes } = storeToRefs(settingsStore);
 const saveSettings = async () => {
   const settingsSaved = await settingsStore.saveSettings();
   if (settingsSaved) {
-    toast.add({ severity: 'success', summary: 'Succes', detail: 'Setările au fost salvate cu succes!', group: 'br', life: 1000 });
+    toast.add({ severity: 'success', summary: 'Succes', detail: 'Setările au fost salvate cu succes!', group: 'br', life: 3000 });
   } else {
     toast.add({ severity: 'error', summary: 'Eroare', detail: 'Setările nu au putut fi salvate!', group: 'br', life: 3000 });
   }
