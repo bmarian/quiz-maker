@@ -7,10 +7,10 @@
       @click="addNewCategory" />
   </div>
   <TreeTable v-else class="categories-table" :value="formattedCategories">
-    <Column field="name" header="Nume" expander expended></Column>
-    <Column field="color" header="Culoare">
+    <Column field="Name" header="Nume" expander expended></Column>
+    <Column field="Color" header="Culoare">
       <template #body="{ node }">
-        <ColorPicker class="categories-table-color-picker" :modelValue="node.data.color" disabled fluid />
+        <ColorPicker class="categories-table-color-picker" :modelValue="node.data.Color" disabled fluid />
       </template>
     </Column>
     <Column style="width: 10rem">
@@ -46,12 +46,12 @@ const { selectedCategory, selectedSubCategory, categories } = storeToRefs(catego
 const formattedCategories = computed(() => {
   if (!Array.isArray(categories.value) || !categories.value.length) return [];
   return categories.value.map((c) => {
-    const { key, children = [], ...data } = c;
-    const formattedChildren = children.map((child) => {
-      const { key: childKey, ...childData } = child;
-      return { key: childKey, parentKey: key, data: childData };
+    const { Key, Children = [], ...data } = c;
+    const formattedChildren = Children.map((child) => {
+      const { Key: childKey, ...childData } = child;
+      return { key: childKey, parentKey: Key, data: childData };
     });
-    return { key, data, children: formattedChildren };
+    return { key: Key, data, children: formattedChildren };
   });
 });
 
@@ -59,7 +59,7 @@ const dialog = useDialog();
 const CategoryDialog = defineAsyncComponent(() => import('../components/CategoryDialog.vue'));
 const SubCategoryDialog = defineAsyncComponent(() => import('../components/SubCategoryDialog.vue'));
 const addNewCategory = () => {
-  selectedCategory.value = { color: randomHexColorGenerator() };
+  selectedCategory.value = { Color: randomHexColorGenerator() };
   dialog.open(CategoryDialog, {
     props: {
       header: 'Adaugă o categorie',
@@ -75,9 +75,9 @@ const addNewCategory = () => {
     onClose() {
       const status = categoriesStore.addCategory(selectedCategory.value);
       if (status) {
-        toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.name} a fost adăugată cu succes!`, group: 'br', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.Name} a fost adăugată cu succes!`, group: 'br', life: 3000 });
       } else {
-        toast.add({ severity: 'error', summary: 'Eroare', detail: `Categoria ${selectedCategory.value.name}, nu a putut fi adăugată! `, group: 'br', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Eroare', detail: `Categoria ${selectedCategory.value.Name}, nu a putut fi adăugată! `, group: 'br', life: 3000 });
       }
 
       selectedCategory.value = {};
@@ -86,11 +86,11 @@ const addNewCategory = () => {
 };
 const editCategory = (category) => {
   const { key, data } = category;
-  selectedCategory.value = { ...data, key };
+  selectedCategory.value = { ...data, Key: key };
 
   dialog.open(CategoryDialog, {
     props: {
-      header: `Editează categoria: ${data.name}`,
+      header: `Editează categoria: ${data.Name}`,
       style: {
         width: '50vw',
       },
@@ -104,18 +104,18 @@ const editCategory = (category) => {
       if (selectedCategory.value.shouldDelete) {
         const status = categoriesStore.deleteCategory(key);
         if (status) {
-          toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.name} a fost ștearsă cu succes!`, group: 'br', life: 3000 });
+          toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.Name} a fost ștearsă cu succes!`, group: 'br', life: 3000 });
         } else {
-          toast.add({ severity: 'error', summary: 'Eroare', detail: `Categoria ${selectedCategory.value.name}, nu a putut fi ștearsă! `, group: 'br', life: 3000 });
+          toast.add({ severity: 'error', summary: 'Eroare', detail: `Categoria ${selectedCategory.value.Name}, nu a putut fi ștearsă! `, group: 'br', life: 3000 });
         }
         return;
       }
 
       const status = categoriesStore.editCategory(key, selectedCategory.value);
       if (status) {
-        toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.name} a fost editată cu succes!`, group: 'br', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.Name} a fost editată cu succes!`, group: 'br', life: 3000 });
       } else {
-        toast.add({ severity: 'error', summary: 'Eroare', detail: `Categoria ${selectedCategory.value.name}, nu a putut fi editată! `, group: 'br', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Eroare', detail: `Categoria ${selectedCategory.value.Name}, nu a putut fi editată! `, group: 'br', life: 3000 });
       }
 
       selectedCategory.value = {};
@@ -124,11 +124,11 @@ const editCategory = (category) => {
 };
 const addSubCategory = (category) => {
   const { key: parentKey, data: parentData } = category;
-  selectedSubCategory.value = { color: parentData.color };
+  selectedSubCategory.value = { Color: parentData.Color };
 
   dialog.open(SubCategoryDialog, {
     props: {
-      header: `Adaugă o subcategorie pentru ${parentData.name}`,
+      header: `Adaugă o subcategorie pentru ${parentData.Name}`,
       style: {
         width: '50vw',
       },
@@ -141,9 +141,9 @@ const addSubCategory = (category) => {
     onClose() {
       const status = categoriesStore.addSubCategory(parentKey, selectedSubCategory.value);
       if (status) {
-        toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.name} a fost adaugată cu succes!`, group: 'br', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.Name} a fost adaugată cu succes!`, group: 'br', life: 3000 });
       } else {
-        toast.add({ severity: 'error', summary: 'Eroare', detail: `Subcategoria ${selectedSubCategory.value.name}, nu a putut fi adaugată! `, group: 'br', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Eroare', detail: `Subcategoria ${selectedSubCategory.value.Name}, nu a putut fi adaugată! `, group: 'br', life: 3000 });
       }
 
       selectedSubCategory.value = {};
@@ -152,11 +152,11 @@ const addSubCategory = (category) => {
 };
 const editSubCategory = (subCategory) => {
   const { key, parentKey, data } = subCategory;
-  selectedSubCategory.value = { ...data, key };
+  selectedSubCategory.value = { ...data, Key: key };
 
   dialog.open(SubCategoryDialog, {
     props: {
-      header: `Editeaza subcategoria: ${data.name}`,
+      header: `Editeaza subcategoria: ${data.Name}`,
       style: {
         width: '50vw',
       },
@@ -170,18 +170,18 @@ const editSubCategory = (subCategory) => {
       if (selectedSubCategory.value.shouldDelete) {
         const status = categoriesStore.deleteSubCategory(parentKey, key);
         if (status) {
-          toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.name} a fost ștearsă cu succes!`, group: 'br', life: 3000 });
+          toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.Name} a fost ștearsă cu succes!`, group: 'br', life: 3000 });
         } else {
-          toast.add({ severity: 'error', summary: 'Eroare', detail: `Subcategoria ${selectedSubCategory.value.name}, nu a putut fi ștearsă! `, group: 'br', life: 3000 });
+          toast.add({ severity: 'error', summary: 'Eroare', detail: `Subcategoria ${selectedSubCategory.value.Name}, nu a putut fi ștearsă! `, group: 'br', life: 3000 });
         }
         return;
       }
 
       const status = categoriesStore.editSubCategory(parentKey, key, selectedSubCategory.value);
       if (status) {
-        toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.name} a fost editată cu succes!`, group: 'br', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.Name} a fost editată cu succes!`, group: 'br', life: 3000 });
       } else {
-        toast.add({ severity: 'error', summary: 'Eroare', detail: `Subcategoria ${selectedSubCategory.value.name}, nu a putut fi editată! `, group: 'br', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Eroare', detail: `Subcategoria ${selectedSubCategory.value.Name}, nu a putut fi editată! `, group: 'br', life: 3000 });
       }
 
       selectedSubCategory.value = {};

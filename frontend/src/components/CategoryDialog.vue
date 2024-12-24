@@ -1,16 +1,16 @@
 <template>
   <FloatLabel variant="on" class="form-input">
-    <InputText v-model="selectedCategory.name" id="categoryName" type="text" fluid />
+    <InputText v-model="selectedCategory.Name" id="categoryName" type="text" fluid />
     <label for="categoryName">Numele categoriei</label>
   </FloatLabel>
   <div class="form-input color-picker">
     <label for="categoryColor">Alege culoarea categoriei: </label>
-    <ColorPicker v-model="selectedCategory.color" id="categoryColor" fluid />
+    <ColorPicker v-model="selectedCategory.Color" id="categoryColor" fluid />
   </div>
   <div class="category-dialog-footer">
     <Button label="Salvează" class="no-category-button" variant="outlined" icon="pi pi-check"
       @click="closeDialog(false)" />
-    <Button v-if="selectedCategory.key" label="Șterge" class="no-category-button" variant="outlined" icon="pi pi-trash"
+    <Button v-if="selectedCategory.Key" label="Șterge" class="no-category-button" variant="outlined" icon="pi pi-trash"
       severity="danger" @click="closeDialog(true)" />
   </div>
 </template>

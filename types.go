@@ -9,6 +9,6 @@ type App struct {
 }
 
 type Settings struct {
-	ApiKey string `json:apiKey`
-	Theme string `json:theme`
+	ApiKey string
+	Theme string
 }
