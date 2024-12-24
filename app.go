@@ -4,6 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
 )
 
 func NewApp() *App {
@@ -11,7 +14,7 @@ func NewApp() *App {
 }
 
 func (a *App) startup(ctx context.Context) {
-	a.ctx = ctx
+	a.ctx = ctx;
 }
 
 func (a *App) LoadSettings() any {
@@ -29,8 +32,30 @@ func (a *App) LoadSettings() any {
 
 func (a *App) SaveSettings(settings string) bool {
 	var settingsFileLocation = "./settings.json";
-	bytes := []byte(settings)
-
-	err := os.WriteFile(settingsFileLocation, bytes, 0777);
+	bytes := []byte(settings);
+	
+	err := os.WriteFile(settingsFileLocation, bytes, 0644);
 	return err == nil;
+}
+
+func (a *App) OpenConfigFolder(settings string) bool {
+	ex, err := os.Executable();
+	if err != nil { return false; }
+
+	folderPath := filepath.Dir(ex);
+
+	var cmd *exec.Cmd;
+	switch runtime.GOOS {
+		case "windows":
+			cmd = exec.Command("explorer", folderPath);
+		case "darwin":
+			cmd = exec.Command("open", folderPath);
+		case "linux":
+			cmd = exec.Command("xdg-open", folderPath);
+		default:
+			return false;
+	}
+
+	cmd.Start();
+	return true;
 }

@@ -3,4 +3,6 @@
 
 export function LoadSettings():Promise<any>;
 
+export function OpenConfigFolder(arg1:string):Promise<boolean>;
+
 export function SaveSettings(arg1:string):Promise<boolean>;

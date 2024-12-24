@@ -4,7 +4,7 @@
   <div v-if="!categories.length">
     <Message size="large" severity="info">Nu a fost găsită nici o categorie, te rog adaugă una!</Message>
     <Button label="Adaugă o categorie" class="no-category-button" variant="outlined" icon="pi pi-plus"
-      @click="addNewCategory" />
+      @click="addCategory" />
   </div>
   <TreeTable v-else class="categories-table" :value="formattedCategories">
     <Column field="Name" header="Nume" expander expended></Column>
@@ -25,8 +25,7 @@
       </template>
     </Column>
     <template #footer>
-      <Button label="Adaugă o categorie nouă" variant="outlined" size="small" icon="pi pi-plus"
-        @click="addNewCategory" />
+      <Button label="Adaugă o categorie nouă" variant="outlined" size="small" icon="pi pi-plus" @click="addCategory" />
     </template>
   </TreeTable>
 </template>
@@ -58,7 +57,7 @@ const formattedCategories = computed(() => {
 const dialog = useDialog();
 const CategoryDialog = defineAsyncComponent(() => import('../components/CategoryDialog.vue'));
 const SubCategoryDialog = defineAsyncComponent(() => import('../components/SubCategoryDialog.vue'));
-const addNewCategory = () => {
+const addCategory = () => {
   selectedCategory.value = { Color: randomHexColorGenerator() };
   dialog.open(CategoryDialog, {
     props: {
@@ -108,6 +107,8 @@ const editCategory = (category) => {
         } else {
           toast.add({ severity: 'error', summary: 'Eroare', detail: `Categoria ${selectedCategory.value.Name}, nu a putut fi ștearsă! `, group: 'br', life: 3000 });
         }
+
+        selectedCategory.value = {};
         return;
       }
 
@@ -174,6 +175,8 @@ const editSubCategory = (subCategory) => {
         } else {
           toast.add({ severity: 'error', summary: 'Eroare', detail: `Subcategoria ${selectedSubCategory.value.Name}, nu a putut fi ștearsă! `, group: 'br', life: 3000 });
         }
+
+        selectedCategory.value = {};
         return;
       }
 

@@ -8,10 +8,9 @@
     <ColorPicker :modelValue="selectedSubCategory.Color" id="categoryColor" disabled fluid />
   </div>
   <div class="category-dialog-footer">
-    <Button label="Salvează" class="no-category-button" variant="outlined" icon="pi pi-check"
-      @click="closeDialog(false)" />
-    <Button v-if="selectedSubCategory.Key" label="Șterge" class="no-category-button" variant="outlined"
-      icon="pi pi-trash" severity="danger" @click="closeDialog(true)" />
+    <Button label="Salvează" variant="outlined" icon="pi pi-check" @click="closeDialog(false)" />
+    <Button v-if="selectedSubCategory.Key" label="Șterge" variant="outlined" icon="pi pi-trash" severity="danger"
+      @click="closeDialog(true)" />
   </div>
 </template>
 

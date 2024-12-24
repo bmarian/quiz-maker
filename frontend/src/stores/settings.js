@@ -27,7 +27,7 @@ export const useSettingsStore = defineStore('settings', {
         ApiKey = savedApiKey;
         Theme = savedTheme;
       } catch (e) {
-        console.log('Unable to retrive backend settings', e);
+        console.error('Unable to retrive backend settings!\n', e);
       }
 
       const theme = this.themes.find((t) => t.code === Theme);
@@ -46,10 +46,11 @@ export const useSettingsStore = defineStore('settings', {
     },
     async saveSettings() {
       const settingsToSave = { ...this.settings, Theme: this.theme };
+      let saved = false;
       try {
-        const saved = await SaveSettings(JSON.stringify(settingsToSave));
+        saved = await SaveSettings(JSON.stringify(settingsToSave));
       } catch (e) {
-        console.log('Unable to send settings to the backend', e);
+        console.error('Unable to send settings to the backend!\n', e);
         return false;
       }
 

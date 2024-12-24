@@ -6,6 +6,10 @@ export function LoadSettings() {
   return window['go']['main']['App']['LoadSettings']();
 }
 
+export function OpenConfigFolder(arg1) {
+  return window['go']['main']['App']['OpenConfigFolder'](arg1);
+}
+
 export function SaveSettings(arg1) {
   return window['go']['main']['App']['SaveSettings'](arg1);
 }
