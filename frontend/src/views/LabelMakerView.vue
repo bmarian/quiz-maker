@@ -109,7 +109,7 @@ const editCategory = (label) => {
 };
 </script>
 
-<style>
+<style lang="scss">
 .no-label-button {
   margin-top: 1rem;
 }

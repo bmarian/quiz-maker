@@ -6,7 +6,7 @@
     <Button label="Adaugă o categorie" class="no-category-button" variant="outlined" icon="pi pi-plus"
       @click="addCategory" />
   </div>
-  <TreeTable v-else class="categories-table" :value="formattedCategories">
+  <TreeTable v-else class="categories-table" :value="formattedCategories" v-model:expandedKeys="expandedCategories">
     <Column field="Name" header="Nume" :expander="hasSubCategory"></Column>
     <Column field="Color" header="Culoare">
       <template #body="{ node }">
@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, computed, ref, onMounted } from 'vue';
+import { defineAsyncComponent, computed, watch, onMounted } from 'vue';
 import DynamicDialog from 'primevue/dynamicdialog';
 import { useCategoriesStore } from "../stores/categories.js";
 import { storeToRefs } from 'pinia';
@@ -41,7 +41,7 @@ import { randomHexColorGenerator } from '../utils.js';
 
 const toast = useToast();
 const categoriesStore = useCategoriesStore();
-const { selectedCategory, selectedSubCategory, categories } = storeToRefs(categoriesStore);
+const { selectedCategory, selectedSubCategory, categories, expandedCategories } = storeToRefs(categoriesStore);
 const formattedCategories = computed(() => {
   if (!Array.isArray(categories.value) || !categories.value.length) return [];
   return categories.value.map((c) => {
@@ -56,6 +56,25 @@ const formattedCategories = computed(() => {
 const hasSubCategory = computed(() => {
   return formattedCategories.value.some((c) => Array.isArray(c.children) && c.children.length)
 });
+
+if (localStorage) {
+  watch(expandedCategories, (newValue) => {
+    if (!newValue) return;
+
+    const valueToSave = JSON.stringify(newValue);
+    localStorage.setItem('expandedKeys', valueToSave);
+  });
+  onMounted(() => {
+    const savedExpandedKeys = localStorage.getItem("expandedKeys");
+    if (!savedExpandedKeys) return;
+
+    try {
+      expandedCategories.value = JSON.parse(savedExpandedKeys);
+    } catch (e) {
+      console.error('Unable to retrive saved expandedKeys!\n', e)
+    }
+  });
+}
 
 const dialog = useDialog();
 const CategoryDialog = defineAsyncComponent(() => import('../components/CategoryDialog.vue'));

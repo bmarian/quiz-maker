@@ -44,6 +44,7 @@ type QuestionLabel struct {
 type Answer struct {
 	Key string
 	Description string
+	IsCorrect bool
 }
 
 type Question struct {

@@ -14,22 +14,22 @@
   {
     "Key": "c672771e-a1fe-42b3-a896-3ed0719b9dd1",
     "Name": "Anatomia omului",
-    "Color": "#FB83B9",
+    "Color": "#360561",
     "Children": [
       {
         "Key": "70784449-28a4-46a0-9e33-b25024dd6072",
         "Name": "Partea de sus",
-        "Color": "#FB83B9"
+        "Color": "#360561"
       },
       {
         "Key": "e8b427f2-fd94-446e-8e02-5d0a15f791b5",
         "Name": "Partea de jos",
-        "Color": "#FB83B9"
+        "Color": "#360561"
       },
       {
         "Key": "7fa44e91-6ea0-4f1b-8b2f-d6b913f3e09a",
         "Name": "Partea de stanga",
-        "Color": "#FB83B9"
+        "Color": "#360561"
       }
     ]
   },
@@ -62,20 +62,21 @@
     ]
   },
   {
-    "Color": "#57A046",
-    "Name": "Medicină de familie",
     "Key": "006cfc14-95df-4cc7-afbe-dfd339bb57d0",
+    "Name": "Medicină de familie",
+    "Color": "#57A046",
     "Children": [
       {
-        "Color": "#57A046",
+        "Key": "c4ac0968-bdf9-4a4c-92b6-3c4a29b97beb",
         "Name": "Inima rea",
-        "Key": "c4ac0968-bdf9-4a4c-92b6-3c4a29b97beb"
+        "Color": "#57A046"
       }
     ]
   },
   {
-    "Color": "#E0D443",
+    "Key": "701fa833-2ba5-42ab-a096-7cd09d150ce6",
     "Name": "Medicină nucleară",
-    "Key": "701fa833-2ba5-42ab-a096-7cd09d150ce6"
+    "Color": "#E0D443",
+    "Children": null
   }
 ]

@@ -8,6 +8,7 @@ export const useCategoriesStore = defineStore('categories', {
     selectedSubCategory: {},
     selectedCategory: {},
     categories: [],
+    expandedCategories: {},
   }),
   getters: {
   },
@@ -50,7 +51,9 @@ export const useCategoriesStore = defineStore('categories', {
 
       const Color = category.Color.startsWith('#') ? category.Color : `#${category.Color}`;
       const { shouldDelete, ...categoryToModify } = category;
-      this.categories[categoryToModifyIndex] = { ...this.categories[categoryToModifyIndex], ...categoryToModify, Color };
+
+      const Children = (this.categories[categoryToModifyIndex].Children || []).map((c) => ({ ...c, Color, }));
+      this.categories[categoryToModifyIndex] = { ...this.categories[categoryToModifyIndex], ...categoryToModify, Color, Children };
 
       await this.saveCategories();
       return true;
