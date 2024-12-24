@@ -9,10 +9,7 @@
       </RouterLink>
     </template>
   </Menubar>
-  <Panel class="main-panel">
-    <template #header>
-      <div><i :class="header.icon"></i> <span>{{ header.label }}</span></div>
-    </template>
+  <Panel class="main-panel" :header="header">
     <RouterView />
   </Panel>
 </template>
@@ -43,7 +40,9 @@ const routes = [
 ];
 const header = computed(() => {
   const { path } = route;
-  return routes.find((r) => r.route === path) || {};
+  const label = routes.find((r) => r.route === path)?.label || '';
+
+  return label;
 });
 
 settingsStore.loadSettings();

@@ -13,10 +13,11 @@
     "pinia": "^2.3.0",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.4",
+    "quill": "^2.0.3",
     "sass": "^1.82.0",
+    "uuid": "^11.0.3",
     "vue": "^3.2.37",
-    "vue-router": "^4.5.0",
-    "uuid": "^11.0.3"
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@primevue/auto-import-resolver": "^4.2.4",
