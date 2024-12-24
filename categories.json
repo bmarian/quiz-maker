@@ -1,0 +1,81 @@
+[
+  {
+    "Key": "652dbca9-21a3-4f9d-b815-2debc9799555",
+    "Name": "A.T.I.",
+    "Color": "#B45237",
+    "Children": null
+  },
+  {
+    "Key": "a1ce2d30-4777-4e4a-bd07-2f269d4cd5fd",
+    "Name": "Anatomie topografică și secțională",
+    "Color": "#0F877A",
+    "Children": null
+  },
+  {
+    "Key": "c672771e-a1fe-42b3-a896-3ed0719b9dd1",
+    "Name": "Anatomia omului",
+    "Color": "#FB83B9",
+    "Children": [
+      {
+        "Key": "70784449-28a4-46a0-9e33-b25024dd6072",
+        "Name": "Partea de sus",
+        "Color": "#FB83B9"
+      },
+      {
+        "Key": "e8b427f2-fd94-446e-8e02-5d0a15f791b5",
+        "Name": "Partea de jos",
+        "Color": "#FB83B9"
+      },
+      {
+        "Key": "7fa44e91-6ea0-4f1b-8b2f-d6b913f3e09a",
+        "Name": "Partea de stanga",
+        "Color": "#FB83B9"
+      }
+    ]
+  },
+  {
+    "Key": "10d762fd-c0d0-4051-8e1d-b254f17df0b0",
+    "Name": "Boli infecțioase tropicale",
+    "Color": "#8852C6",
+    "Children": null
+  },
+  {
+    "Key": "d6e8447d-d980-4db4-8d04-bee70369d254",
+    "Name": "Dermatologie",
+    "Color": "#3F727A",
+    "Children": [
+      {
+        "Key": "5a5eb9a9-574c-4c89-97af-f90971111f0d",
+        "Name": "Maini",
+        "Color": "#3F727A"
+      },
+      {
+        "Key": "7e86421d-18a3-4c57-bdcc-52c0f7243b89",
+        "Name": "Picioare",
+        "Color": "#3F727A"
+      },
+      {
+        "Key": "96126c0d-a47a-43ac-a052-7d2b6fe42faf",
+        "Name": "Fata",
+        "Color": "#3F727A"
+      }
+    ]
+  },
+  {
+    "Color": "#57A046",
+    "Name": "Medicină de familie",
+    "Key": "006cfc14-95df-4cc7-afbe-dfd339bb57d0",
+    "Children": [
+      {
+        "Color": "#57A046",
+        "Name": "Inima rea",
+        "Key": "c4ac0968-bdf9-4a4c-92b6-3c4a29b97beb"
+      }
+    ]
+  },
+  {
+    "Color": "#E0D443",
+    "Name": "Medicină nucleară",
+    "Key": "701fa833-2ba5-42ab-a096-7cd09d150ce6"
+  }
+]

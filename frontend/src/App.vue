@@ -9,22 +9,27 @@
       </RouterLink>
     </template>
   </Menubar>
-  <Panel class="main-panel" :header="header">
+  <Panel class="main-panel">
+    <template #header>
+      <div><i :class="header.icon"></i> <span>{{ header.label }}</span></div>
+    </template>
     <RouterView />
   </Panel>
 </template>
 
 <script setup>
-import { reactive, computed, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router';
 import { useSettingsStore } from "./stores/settings.js"
 import { useCategoriesStore } from './stores/categories.js';
 import { useLabelsStore } from './stores/labels.js';
+import { useQuestionsStore } from './stores/questions.js';
 
 const settingsStore = useSettingsStore();
 const categoriesStore = useCategoriesStore();
 const labelsStore = useLabelsStore();
+const questionsStore = useQuestionsStore();
 
 const { theme } = storeToRefs(settingsStore);
 const route = useRoute();
@@ -38,14 +43,13 @@ const routes = [
 ];
 const header = computed(() => {
   const { path } = route;
-  const label = routes.find((r) => r.route === path)?.label || '';
-
-  return label;
+  return routes.find((r) => r.route === path) || {};
 });
 
 settingsStore.loadSettings();
 categoriesStore.loadCategories();
 labelsStore.loadLabels();
+questionsStore.loadQuestions();
 
 watch(theme, (newValue) => {
   const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;

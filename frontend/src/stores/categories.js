@@ -1,5 +1,7 @@
+import { browserMocks } from "../utils"
 import { defineStore } from "pinia"
 import { v4 as uuidv4 } from 'uuid';
+import { LoadCategories, SaveCategories } from "../../wailsjs/go/main/App";
 
 export const useCategoriesStore = defineStore('categories', {
   state: () => ({
@@ -11,70 +13,24 @@ export const useCategoriesStore = defineStore('categories', {
   },
   actions: {
     async loadCategories() {
-      this.categories = [
-        {
-          "Color": "#B45237",
-          "Name": "A.T.I.",
-          "Key": "652dbca9-21a3-4f9d-b815-2debc9799555"
-        },
-        {
-          "Color": "#0F877A",
-          "Name": "Anatomie topografică și secțională",
-          "Key": "a1ce2d30-4777-4e4a-bd07-2f269d4cd5fd"
-        },
-        {
-          "Color": "#FB83B9",
-          "Name": "Anatomia omului",
-          "Key": "c672771e-a1fe-42b3-a896-3ed0719b9dd1",
-          "Children": [
-            {
-              "Color": "#FB83B9",
-              "Name": "Partea de sus",
-              "Key": "70784449-28a4-46a0-9e33-b25024dd6072"
-            },
-            {
-              "Color": "#FB83B9",
-              "Name": "Partea de jos",
-              "Key": "e8b427f2-fd94-446e-8e02-5d0a15f791b5"
-            },
-            {
-              "Color": "#FB83B9",
-              "Name": "Partea de stanga",
-              "Key": "7fa44e91-6ea0-4f1b-8b2f-d6b913f3e09a"
-            }
-          ]
-        },
-        {
-          "Color": "#8852C6",
-          "Name": "Boli infecțioase tropicale",
-          "Key": "10d762fd-c0d0-4051-8e1d-b254f17df0b0"
-        },
-        {
-          "Color": "#3F727A",
-          "Name": "Dermatologie",
-          "Key": "d6e8447d-d980-4db4-8d04-bee70369d254",
-          "Children": [
-            {
-              "Color": "#3F727A",
-              "Name": "Maini",
-              "Key": "5a5eb9a9-574c-4c89-97af-f90971111f0d"
-            },
-            {
-              "Color": "#3F727A",
-              "Name": "Picioare",
-              "Key": "7e86421d-18a3-4c57-bdcc-52c0f7243b89"
-            },
-            {
-              "Color": "#3F727A",
-              "Name": "Fata",
-              "Key": "96126c0d-a47a-43ac-a052-7d2b6fe42faf"
-            }
-          ]
-        }
-      ];
+      if (Array.isArray(this.categories) && this.categories.length) return;
+
+      try {
+        const savedCategories = await LoadCategories();
+        this.categories = savedCategories || [];
+      } catch (e) {
+        console.error('Unable to retrive backend categories!\n', e);
+
+        if (browserMocks.useMocks) this.categories = browserMocks.categories;
+      }
     },
     async saveCategories() {
-
+      try {
+        return await SaveCategories(JSON.stringify(this.categories));
+      } catch (e) {
+        console.error('Unable to send categories to the backend!\n', e);
+        return false;
+      }
     },
     async addCategory(category) {
       if (!category || !category.Name) return false;

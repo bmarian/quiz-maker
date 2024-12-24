@@ -6,7 +6,7 @@
     <Button label="Adaugă o etichetă" class="no-label-button" variant="outlined" icon="pi pi-plus" @click="addLabel" />
   </div>
   <TreeTable v-else class="labels-table" :value="formattedLabels">
-    <Column field="Name" header="Nume" expander expended></Column>
+    <Column field="Name" header="Nume"></Column>
     <Column field="Color" header="Culoare">
       <template #body="{ node }">
         <ColorPicker class="labels-table-color-picker" :modelValue="node.data.Color" disabled fluid />
@@ -18,7 +18,7 @@
       </template>
     </Column>
     <template #footer>
-      <Button label="Adaugă o etichetă nouă" variant="outlined" icon="pi pi-plus" @click="addLabel" />
+      <Button label="Adaugă o etichetă nouă" variant="outlined" size="small" icon="pi pi-plus" @click="addLabel" />
     </template>
   </TreeTable>
 </template>

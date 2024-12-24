@@ -1,4 +1,5 @@
 import { defineStore } from "pinia"
+import { browserMocks } from "../utils"
 import { LoadSettings, SaveSettings } from "../../wailsjs/go/main/App.js";
 
 export const useSettingsStore = defineStore('settings', {
@@ -28,6 +29,10 @@ export const useSettingsStore = defineStore('settings', {
         Theme = savedTheme;
       } catch (e) {
         console.error('Unable to retrive backend settings!\n', e);
+        if (browserMocks.useMocks) {
+          ApiKey = browserMocks.settings.ApiKey;
+          Theme = browserMocks.settings.Theme;
+        }
       }
 
       const theme = this.themes.find((t) => t.code === Theme);

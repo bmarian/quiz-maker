@@ -1,5 +1,7 @@
 import { defineStore } from "pinia"
 import { v4 as uuidv4 } from 'uuid';
+import { browserMocks } from "../utils";
+import { LoadLabels, SaveLabels } from "../../wailsjs/go/main/App";
 
 export const useLabelsStore = defineStore('labels', {
   state: () => ({
@@ -10,25 +12,23 @@ export const useLabelsStore = defineStore('labels', {
   },
   actions: {
     async loadLabels() {
-      this.labels = [
-        {
-          "Color": "#1bf747",
-          "Name": "Easy",
-          "Key": "4b467f94-143d-45b5-bbfb-d1d7409d0841"
-        },
-        {
-          "Color": "#086CC2",
-          "Name": "Medium",
-          "Key": "cbd9ab6d-6631-457e-b44f-3ca722e721f6"
-        },
-        {
-          "Color": "#ff0000",
-          "Name": "Hard",
-          "Key": "e70f99d8-e4fe-4b84-b303-5fe0c1f16dd9"
-        }
-      ];
+      if (Array.isArray(this.labels) && this.labels.length) return;
+      try {
+        const savedLabels = await LoadLabels();
+        this.labels = savedLabels || [];
+      } catch (e) {
+        console.error('Unable to retrive backend labels!\n', e);
+
+        if (browserMocks.useMocks) this.labels = browserMocks.labels;
+      }
     },
     async saveLabels() {
+      try {
+        return await SaveLabels(JSON.stringify(this.labels));
+      } catch (e) {
+        console.error('Unable to send labels to the backend!\n', e);
+        return false;
+      }
     },
     async addLabel(label) {
       if (!label || !label.Name) return false;

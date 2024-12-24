@@ -7,7 +7,7 @@
       @click="addCategory" />
   </div>
   <TreeTable v-else class="categories-table" :value="formattedCategories">
-    <Column field="Name" header="Nume" expander expended></Column>
+    <Column field="Name" header="Nume" :expander="hasSubCategory"></Column>
     <Column field="Color" header="Culoare">
       <template #body="{ node }">
         <ColorPicker class="categories-table-color-picker" :modelValue="node.data.Color" disabled fluid />
@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, computed } from 'vue';
+import { defineAsyncComponent, computed, ref, onMounted } from 'vue';
 import DynamicDialog from 'primevue/dynamicdialog';
 import { useCategoriesStore } from "../stores/categories.js";
 import { storeToRefs } from 'pinia';
@@ -46,12 +46,15 @@ const formattedCategories = computed(() => {
   if (!Array.isArray(categories.value) || !categories.value.length) return [];
   return categories.value.map((c) => {
     const { Key, Children = [], ...data } = c;
-    const formattedChildren = Children.map((child) => {
+    const formattedChildren = (Children || []).map((child) => {
       const { Key: childKey, ...childData } = child;
       return { key: childKey, parentKey: Key, data: childData };
     });
     return { key: Key, data, children: formattedChildren };
   });
+});
+const hasSubCategory = computed(() => {
+  return formattedCategories.value.some((c) => Array.isArray(c.children) && c.children.length)
 });
 
 const dialog = useDialog();
