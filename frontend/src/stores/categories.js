@@ -1,77 +1,115 @@
+import { browserMocks } from "../utils"
 import { defineStore } from "pinia"
 import { v4 as uuidv4 } from 'uuid';
+import { LoadCategories, SaveCategories } from "../../wailsjs/go/main/App";
 
 export const useCategoriesStore = defineStore('categories', {
   state: () => ({
     selectedSubCategory: {},
     selectedCategory: {},
     categories: [],
+    expandedCategories: {},
   }),
   getters: {
   },
   actions: {
-    addCategory(category) {
-      if (!category || !category.name) return false;
+    async loadCategories() {
+      if (Array.isArray(this.categories) && this.categories.length) return;
 
-      const color = category.color.startsWith('#') ? category.color : `#${category.color}`;
-      this.categories.push({ ...category, key: uuidv4(), color });
+      try {
+        const savedCategories = await LoadCategories();
+        this.categories = savedCategories || [];
+      } catch (e) {
+        console.error('Unable to retrive backend categories!\n', e);
 
+        if (browserMocks.useMocks) this.categories = browserMocks.categories;
+      }
+    },
+    async saveCategories() {
+      try {
+        return await SaveCategories(JSON.stringify(this.categories));
+      } catch (e) {
+        console.error('Unable to send categories to the backend!\n', e);
+        return false;
+      }
+    },
+    async addCategory(category) {
+      if (!category || !category.Name) return false;
+
+      const Color = category.Color.startsWith('#') ? category.Color : `#${category.Color}`;
+      const { shouldDelete, ...categoryToAdd } = category;
+      this.categories.push({ ...categoryToAdd, Key: uuidv4(), Color });
+
+      await this.saveCategories();
       return true;
     },
-    editCategory(key, category) {
-      if (!key || !category || !category.name) return false;
+    async editCategory(key, category) {
+      if (!key || !category || !category.Name) return false;
 
-      const categoryToModifyIndex = this.categories.findIndex((c) => c.key === key);
+      const categoryToModifyIndex = this.categories.findIndex((c) => c.Key === key);
       if (categoryToModifyIndex === -1) return false;
 
-      const color = category.color.startsWith('#') ? category.color : `#${category.color}`;
-      this.categories[categoryToModifyIndex] = { ...this.categories[categoryToModifyIndex], ...category, color };
+      const Color = category.Color.startsWith('#') ? category.Color : `#${category.Color}`;
+      const { shouldDelete, ...categoryToModify } = category;
 
+      const Children = (this.categories[categoryToModifyIndex].Children || []).map((c) => ({ ...c, Color, }));
+      this.categories[categoryToModifyIndex] = { ...this.categories[categoryToModifyIndex], ...categoryToModify, Color, Children };
+
+      await this.saveCategories();
       return true;
     },
-    addSubCategory(parentKey, subCategory) {
-      if (!parentKey || !subCategory || !subCategory.name) return false;
+    async addSubCategory(parentKey, subCategory) {
+      if (!parentKey || !subCategory || !subCategory.Name) return false;
 
-      const categoryToModifyIndex = this.categories.findIndex((c) => c.key === parentKey);
+      const categoryToModifyIndex = this.categories.findIndex((c) => c.Key === parentKey);
       if (categoryToModifyIndex === -1) return false;
 
-      const child = { ...subCategory, key: uuidv4() };
-      const children = [...(this.categories[categoryToModifyIndex].children || []), child];
-      this.categories[categoryToModifyIndex].children = children;
+      const { shouldDelete, ...subCategoryToAdd } = subCategory;
+      const child = { ...subCategoryToAdd, Key: uuidv4() };
+      const children = [...(this.categories[categoryToModifyIndex].Children || []), child];
+      this.categories[categoryToModifyIndex].Children = children;
 
+      await this.saveCategories();
       return true;
     },
-    editSubCategory(parentKey, key, subCategory) {
-      if (!parentKey || !key || !subCategory || !subCategory.name) return false;
+    async editSubCategory(parentKey, key, subCategory) {
+      if (!parentKey || !key || !subCategory || !subCategory.Name) return false;
 
-      const categoryToModifyIndex = this.categories.findIndex((c) => c.key === parentKey);
+      const categoryToModifyIndex = this.categories.findIndex((c) => c.Key === parentKey);
       if (categoryToModifyIndex === -1) return false;
 
-      const childToModifyIndex = (this.categories[categoryToModifyIndex].children || []).findIndex((child) => child.key === key);
+      const childToModifyIndex = (this.categories[categoryToModifyIndex].Children || []).findIndex((child) => child.Key === key);
       if (childToModifyIndex === -1) return false;
 
-      this.categories[categoryToModifyIndex].children[childToModifyIndex] = { ...subCategory, key };
+      const { shouldDelete, ...subCategoryToModify } = subCategory;
+      this.categories[categoryToModifyIndex].Children[childToModifyIndex] = { ...subCategoryToModify, Key: key };
+
+      await this.saveCategories();
       return true;
     },
-    deleteCategory(key) {
+    async deleteCategory(key) {
       if (!key) return false;
 
-      const categoryToModifyIndex = this.categories.findIndex((c) => c.key === key);
+      const categoryToModifyIndex = this.categories.findIndex((c) => c.Key === key);
       if (categoryToModifyIndex === -1) return false;
 
-      this.categories = this.categories.filter((c) => c.key !== key);
+      this.categories = this.categories.filter((c) => c.Key !== key);
+
+      await this.saveCategories();
       return true;
     },
-    deleteSubCategory(parentKey, key) {
+    async deleteSubCategory(parentKey, key) {
       if (!parentKey || !key) return false;
 
-      const categoryToModifyIndex = this.categories.findIndex((c) => c.key === parentKey);
+      const categoryToModifyIndex = this.categories.findIndex((c) => c.Key === parentKey);
       if (categoryToModifyIndex === -1) return false;
 
-      const childToModifyIndex = (this.categories[categoryToModifyIndex].children || []).findIndex((child) => child.key === key);
+      const childToModifyIndex = (this.categories[categoryToModifyIndex].Children || []).findIndex((child) => child.Key === key);
       if (childToModifyIndex === -1) return false;
 
-      this.categories[categoryToModifyIndex].children = this.categories[categoryToModifyIndex].children.filter((child) => child.key !== key);
+      this.categories[categoryToModifyIndex].Children = this.categories[categoryToModifyIndex].Children.filter((child) => child.Key !== key);
+
+      await this.saveCategories();
       return true;
     }
   },

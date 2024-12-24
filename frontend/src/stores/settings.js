@@ -1,4 +1,5 @@
 import { defineStore } from "pinia"
+import { browserMocks } from "../utils"
 import { LoadSettings, SaveSettings } from "../../wailsjs/go/main/App.js";
 
 export const useSettingsStore = defineStore('settings', {
@@ -21,7 +22,18 @@ export const useSettingsStore = defineStore('settings', {
     async loadSettings() {
       if (this.settings.Theme) return;
 
-      const { ApiKey, Theme } = await LoadSettings() || {};
+      let ApiKey, Theme;
+      try {
+        const { ApiKey: savedApiKey, Theme: savedTheme } = await LoadSettings() || {};
+        ApiKey = savedApiKey;
+        Theme = savedTheme;
+      } catch (e) {
+        console.error('Unable to retrive backend settings!\n', e);
+        if (browserMocks.useMocks) {
+          ApiKey = browserMocks.settings.ApiKey;
+          Theme = browserMocks.settings.Theme;
+        }
+      }
 
       const theme = this.themes.find((t) => t.code === Theme);
       this.settings.Theme = theme || this.themes[0];
@@ -39,7 +51,13 @@ export const useSettingsStore = defineStore('settings', {
     },
     async saveSettings() {
       const settingsToSave = { ...this.settings, Theme: this.theme };
-      const saved = await SaveSettings(JSON.stringify(settingsToSave));
+      let saved = false;
+      try {
+        saved = await SaveSettings(JSON.stringify(settingsToSave));
+      } catch (e) {
+        console.error('Unable to send settings to the backend!\n', e);
+        return false;
+      }
 
       return saved;
     },
