@@ -9,6 +9,18 @@
       </div>
     </div>
     <Textarea v-model="selectedQuestion.Description" autoResize fluid rows="3" />
+    <div class="question-maker-tags">
+      <FloatLabel variant="on">
+        <AutoComplete inputId="category" multiple fluid dataKey="Key" :optionLabel="getCategoryLabel"
+          v-model="selectedQuestion.Categories" :suggestions="searchCategories" @complete="searchCategory" />
+        <label for="category">Categorii</label>
+      </FloatLabel>
+      <FloatLabel variant="on">
+        <AutoComplete inputId="label" multiple fluid :optionLabel="getLabelLabel" v-model="selectedQuestion.Labels"
+          :suggestions="searchLabels" @complete="searchLabel" />
+        <label for="label">Etichete</label>
+      </FloatLabel>
+    </div>
     <div class="question-maker-answer-container">
       <h3 class="title">Raspunsuri:</h3>
       <div class="answer" v-for="Answer in selectedQuestion.Answers">
@@ -38,8 +50,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useQuestionsStore } from "../stores/questions";
+import { useLabelsStore } from "../stores/labels";
+import { useCategoriesStore } from "../stores/categories";
 import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
 import { v4 as uuidv4 } from 'uuid';
@@ -48,7 +62,51 @@ const toast = useToast();
 const questionsStore = useQuestionsStore();
 const { selectedQuestion } = storeToRefs(questionsStore);
 
-const cleanup = () => { };
+const labelsStore = useLabelsStore();
+const { labels } = storeToRefs(labelsStore);
+
+const categoriesStore = useCategoriesStore();
+const { categories } = storeToRefs(categoriesStore);
+const flatCategories = computed(() => {
+  if (!categories.value.length) return [];
+  return categories.value.reduce((acc, c) => {
+    if (!c.Children) return [...acc, c];
+
+    const { Children, ...cat } = c;
+    const children = Children.map((child) => ({ ...child, Name: `${c.Name} - ${child.Name}`, ParentKey: c.Key }));
+    return [...acc, cat, ...children];
+  }, []);
+});
+
+const searchLabels = ref([]);
+const searchLabel = ({ query }) => {
+  if (!labels.value.length || !query) {
+    searchLabels.value = [];
+    return;
+  }
+
+  searchLabels.value = labels.value
+    .filter((l) => (l.Name || '').toLowerCase().includes(query.toLowerCase()))
+    .map((l) => l.Key);
+};
+const getLabelLabel = (key) => {
+  return labels.value.find((l) => l.Key === key)?.Name || '';
+};
+
+const searchCategories = ref([]);
+const searchCategory = ({ query }) => {
+  if (!flatCategories.value.length || !query) {
+    searchCategories.value = [];
+    return;
+  }
+
+  searchCategories.value = flatCategories.value
+    .filter((c) => (c.Name || '').toLowerCase().includes(query.toLowerCase()))
+    .map((c) => ({ Key: c.Key, ParentKey: c.ParentKey }));
+};
+const getCategoryLabel = ({ Key: key }) => {
+  return flatCategories.value.find((c) => c.Key === key)?.Name || '';
+};
 
 const addAnswer = () => {
   const newAnswer = { Key: uuidv4(), IsCorrect: false, Description: '' };
@@ -63,10 +121,19 @@ const clearQuestion = () => {
   const newAnswer = { Key: uuidv4(), IsCorrect: false, Description: '' };
   selectedQuestion.value = { Description: '', Answers: [newAnswer] };
 };
-
-const saveQuestion = () => { };
-const editQuestion = () => { };
-const deleteQuestion = () => { };
+const saveQuestion = async () => {
+  const { added, saved, message } = await questionsStore.addQuestion(selectedQuestion.value);
+  if (added && saved) {
+    toast.add({ severity: 'success', summary: 'Succes', detail: message, group: 'br', life: 3000 });
+    clearQuestion();
+  } else {
+    toast.add({ severity: 'error', summary: 'Eroare', detail: message, group: 'br', life: 10000 });
+  }
+};
+const editQuestion = () => {
+};
+const deleteQuestion = () => {
+};
 
 onMounted(() => {
   if (Array.isArray(selectedQuestion.value.Answers) && selectedQuestion.value.Answers.length) return;
@@ -91,6 +158,18 @@ onMounted(() => {
       & .p-checkbox {
         margin-right: 0.5rem;
       }
+    }
+  }
+
+  & .question-maker-tags {
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
+    margin-top: 1rem;
+    align-items: baseline;
+
+    & .p-floatlabel {
+      flex: 1;
     }
   }
 

@@ -93,8 +93,8 @@ const addCategory = () => {
       },
       modal: true
     },
-    onClose() {
-      const status = categoriesStore.addCategory(selectedCategory.value);
+    async onClose() {
+      const status = await categoriesStore.addCategory(selectedCategory.value);
       if (status) {
         toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.Name} a fost adăugată cu succes!`, group: 'br', life: 3000 });
       } else {
@@ -121,9 +121,9 @@ const editCategory = (category) => {
       },
       modal: true
     },
-    onClose() {
+    async onClose() {
       if (selectedCategory.value.shouldDelete) {
-        const status = categoriesStore.deleteCategory(key);
+        const status = await categoriesStore.deleteCategory(key);
         if (status) {
           toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.Name} a fost ștearsă cu succes!`, group: 'br', life: 3000 });
         } else {
@@ -134,7 +134,7 @@ const editCategory = (category) => {
         return;
       }
 
-      const status = categoriesStore.editCategory(key, selectedCategory.value);
+      const status = await categoriesStore.editCategory(key, selectedCategory.value);
       if (status) {
         toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedCategory.value.Name} a fost editată cu succes!`, group: 'br', life: 3000 });
       } else {
@@ -161,8 +161,8 @@ const addSubCategory = (category) => {
       },
       modal: true
     },
-    onClose() {
-      const status = categoriesStore.addSubCategory(parentKey, selectedSubCategory.value);
+    async onClose() {
+      const status = await categoriesStore.addSubCategory(parentKey, selectedSubCategory.value);
       if (status) {
         toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.Name} a fost adaugată cu succes!`, group: 'br', life: 3000 });
       } else {
@@ -189,9 +189,9 @@ const editSubCategory = (subCategory) => {
       },
       modal: true
     },
-    onClose() {
+    async onClose() {
       if (selectedSubCategory.value.shouldDelete) {
-        const status = categoriesStore.deleteSubCategory(parentKey, key);
+        const status = await categoriesStore.deleteSubCategory(parentKey, key);
         if (status) {
           toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.Name} a fost ștearsă cu succes!`, group: 'br', life: 3000 });
         } else {
@@ -202,7 +202,7 @@ const editSubCategory = (subCategory) => {
         return;
       }
 
-      const status = categoriesStore.editSubCategory(parentKey, key, selectedSubCategory.value);
+      const status = await categoriesStore.editSubCategory(parentKey, key, selectedSubCategory.value);
       if (status) {
         toast.add({ severity: 'success', summary: 'Succes', detail: `Subcategoria ${selectedSubCategory.value.Name} a fost editată cu succes!`, group: 'br', life: 3000 });
       } else {

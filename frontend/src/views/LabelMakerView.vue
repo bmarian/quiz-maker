@@ -55,8 +55,8 @@ const addLabel = () => {
       },
       modal: true
     },
-    onClose() {
-      const status = labelStore.addLabel(selectedLabel.value);
+    async onClose() {
+      const status = await labelStore.addLabel(selectedLabel.value);
       if (status) {
         toast.add({ severity: 'success', summary: 'Succes', detail: `Eticheta ${selectedLabel.value.Name} a fost adăugată cu succes!`, group: 'br', life: 3000 });
       } else {
@@ -83,9 +83,9 @@ const editCategory = (label) => {
       },
       modal: true
     },
-    onClose() {
+    async onClose() {
       if (selectedLabel.value.shouldDelete) {
-        const status = labelStore.deleteLabel(key);
+        const status = await labelStore.deleteLabel(key);
         if (status) {
           toast.add({ severity: 'success', summary: 'Succes', detail: `Eticheta ${selectedLabel.value.Name} a fost ștearsă cu succes!`, group: 'br', life: 3000 });
         } else {
@@ -96,7 +96,7 @@ const editCategory = (label) => {
         return;
       }
 
-      const status = labelStore.editLabel(key, selectedLabel.value);
+      const status = await labelStore.editLabel(key, selectedLabel.value);
       if (status) {
         toast.add({ severity: 'success', summary: 'Succes', detail: `Categoria ${selectedLabel.value.Name} a fost editată cu succes!`, group: 'br', life: 3000 });
       } else {

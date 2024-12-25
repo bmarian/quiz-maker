@@ -37,10 +37,6 @@ type QuestionCategory struct {
 	ParentKey string
 }
 
-type QuestionLabel struct {
-	Key string
-}
-
 type Answer struct {
 	Key string
 	Description string
@@ -52,6 +48,6 @@ type Question struct {
 	Description string
 	HasOneAnswer bool
 	Categories []QuestionCategory
-	Labels []QuestionLabel
+	Labels []string
 	Answers []Answer
 }
