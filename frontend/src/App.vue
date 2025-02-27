@@ -15,20 +15,27 @@
 </template>
 
 <script setup>
-import { reactive, computed, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router';
 import { useSettingsStore } from "./stores/settings.js"
+import { useCategoriesStore } from './stores/categories.js';
+import { useLabelsStore } from './stores/labels.js';
+import { useQuestionsStore } from './stores/questions.js';
 
 const settingsStore = useSettingsStore();
-const { settings, theme } = storeToRefs(settingsStore);
+const categoriesStore = useCategoriesStore();
+const labelsStore = useLabelsStore();
+const questionsStore = useQuestionsStore();
+
+const { theme } = storeToRefs(settingsStore);
 const route = useRoute();
 
 const routes = [
   { route: '/', label: 'Adaugă o întrebare', icon: 'pi pi-clipboard' },
+  { route: '/list', label: 'Lista întrebărilor', icon: 'pi pi-bars' },
   { route: '/category', label: 'Manager de categorii', icon: 'pi pi-book' },
   { route: '/label', label: 'Manager de etichete', icon: 'pi pi-tag' },
-  { route: '/list', label: 'Lista întrebărilor', icon: 'pi pi-bars' },
   { route: '/settings', label: 'Setări', icon: 'pi pi-cog' },
 ];
 const header = computed(() => {
@@ -39,6 +46,9 @@ const header = computed(() => {
 });
 
 settingsStore.loadSettings();
+categoriesStore.loadCategories();
+labelsStore.loadLabels();
+questionsStore.loadQuestions();
 
 watch(theme, (newValue) => {
   const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
